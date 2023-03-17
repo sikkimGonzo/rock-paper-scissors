@@ -4,8 +4,15 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        ChoosOption(args);
+    }
+
+    public static void ChoosOption(string[] args)
+    {
         bool isEven = args.Length % 2 == 0;
         bool isRepeated = args.Length != args.Distinct().Count();
+        
+
         if(args.Length < 3)
         {
             Console.WriteLine("You must enter at least three arguments");
@@ -24,19 +31,31 @@ public class Program
         }
         else
         {
-            int computerMove = RandomNumberGenerator.GetInt32(args.Length);
-            string computerMoveData = args[computerMove];
-            byte[] key = MoveCryptography.GetKeySHA256(32);
-            byte[] hmac = MoveCryptography.GetHMAC(key, computerMoveData);
-            Console.WriteLine("hmac: {0}", Convert.ToHexString(hmac));
-            PrintMenu(args);
-            int userMove = ReadUserMove(args) - 1;
-            string RockPaperScissorsResult = RockPaperScissorsGame.GetResult(computerMove, userMove, args);
-            Console.WriteLine("Your move: {0}", args[userMove]);
-            Console.WriteLine("Computer move: {0}", args[computerMove]);
-            Console.WriteLine(RockPaperScissorsResult == "Draw" ? RockPaperScissorsResult : $"You {RockPaperScissorsResult}!");
-            Console.WriteLine("hmac key: {0}", Convert.ToHexString(key));
+            GetDefaultOption(args);
         }
+
+        Console.WriteLine();
+    }
+
+    public static void GetDefaultOption(string[] args)
+    {
+        int computerMove = RandomNumberGenerator.GetInt32(args.Length);
+        string computerMoveData = args[computerMove];
+        byte[] key = MoveCryptography.GetKeySHA256(32);
+        byte[] hmac = MoveCryptography.GetHMAC(key, computerMoveData);
+        Console.WriteLine("hmac: {0}", Convert.ToHexString(hmac));
+        PrintMenu(args);
+        int userMove = ReadUserMove(args) - 1;
+        GetMoveData(computerMove, userMove, key, args);
+    }
+
+    public static void GetMoveData(int computerMove, int userMove, byte[] key, string[] args)
+    {
+        string RockPaperScissorsResult = RockPaperScissorsGame.GetResult(computerMove, userMove, args);
+        Console.WriteLine("Your move: {0}", args[userMove]);
+        Console.WriteLine("Computer move: {0}", args[computerMove]);
+        Console.WriteLine(RockPaperScissorsResult == "Draw" ? RockPaperScissorsResult : $"You {RockPaperScissorsResult}!");
+        Console.WriteLine("hmac key: {0}", Convert.ToHexString(key));
     }
 
     public static void PrintMenu(string[] args)
